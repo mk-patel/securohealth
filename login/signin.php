@@ -17,21 +17,31 @@
 		if(!empty($user_email) && !empty($password)){
 			
 			// Checking for email existency.
-			$select_user = "select user_id,user_email,password from user";
+			$select_user = "select user_id,user_email,password,user_verified,user_status from user";
 			$select_result = mysqli_query($conn, $select_user);
 			
 			while($user_row_encrypted = mysqli_fetch_assoc($select_result)){
 				$user_decrypted_email = aes_decrypt($user_row_encrypted['user_email']);
 				$user_id = $user_row_encrypted['user_id'];
 				
-				if($user_decrypted_email == $user_email){
-					$user_password = $user_row_encrypted['password'];
-					$user_id = $user_row_encrypted['user_id'];
-					$status = 200;
-					break;
-				}
-				else{
-					$status = 1;
+				if($user_row_encrypted['user_verified']==1){
+					
+					if($user_row_encrypted['user_status']==1){
+						
+						if($user_decrypted_email == $user_email){
+							$user_password = $user_row_encrypted['password'];
+							$user_id = $user_row_encrypted['user_id'];
+							$status = 200;
+							break;
+						}
+						else{
+							$status = 1;
+						}
+					}else{
+						header('location:issue.php?i=2');
+					}
+				}else{
+					header('location:issue.php?i=1');
 				}
 			}
 		}else{
@@ -48,6 +58,10 @@
 		if($password != $user_password){
 			echo "<script>alert('Warning! Invalid Access.');</script>";
 		}else{
+			
+			// Starting the session to keep the user logged in.
+			session_start();
+			
 			$_SESSION['uid'] = aes_encrypt($user_id);
 			$_SESSION['email'] = aes_encrypt($user_email);
 			$_SESSION['password'] = aes_encrypt($password);

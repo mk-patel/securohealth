@@ -136,7 +136,7 @@
 												$go_ahead = 1;
 											}
 										}else{
-											echo "Invalid OTP.";
+											echo "Invalid Verification.";
 										}
 									}else{
 										echo "Invalid.";
@@ -198,7 +198,7 @@
 									<div style="background:#301934;padding:2px;width:348px">
 									</div>
 									<div style="float:left;width:100%;text-align:center; margin-top:5px;color:white;font-size:20px;">
-										<b><?php echo $user_card;?></b>
+										<b><?php echo substr($user_card,0,4)." ".substr($user_card,4,3)." ".substr($user_card,7,4);?></b>
 									</div>
 								</div>
 							</div>
@@ -228,7 +228,7 @@
 									<div style="background:#301934;padding:2px;width:348px">
 									</div>
 									<div style="float:left;width:100%;text-align:center; margin-top:5px;color:white;font-size:20px;">
-										<b><?php echo $user_card;?></b>
+										<b><?php echo substr($user_card,0,4)." ".substr($user_card,4,3)." ".substr($user_card,7,4);?></b>
 									</div>
 								</div>
 							</div>
@@ -246,18 +246,5 @@
             </div>
         </div>
     </div>
-	<script>
-		function printCard(){
-			var iframe = document.createElement('iframe');
-			iframe.onload = function() {
-				var doc = iframe.contentDocument ? iframe.contentDocument : iframe.contentWindow.document;
-				doc.getElementsByTagName('html')[0].innerHTML='<div class="p-2 card-name text-primary"><b>Curo Card</b></div>';
-
-				iframe.contentWindow.focus(); // This is key, the iframe must have focus first
-				iframe.contentWindow.print();
-			}
-			document.getElementsByTagName('html')[0].appendChild(iframe);
-		}
-	</script>
 </body>
 </html>

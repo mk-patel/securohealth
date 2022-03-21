@@ -30,27 +30,33 @@
             border-radius: 20px !important;
             box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
         }
+		
 		.btn-strong-color{
 			background:#ff69b4;
 			color:#191970;
 			font-weight:600;
 		}
+		
 		.btn-strong-color:hover{
 			background:#ff10f0;
 		}
+		
 		.btn-loose-color{
 			background:white;
 			color:#ff69b4;
 			font-weight:600;
 			border:1px solid #191970;
 		}
+		
         .title {
             margin-bottom: 2rem;
         }
+		
 		#progressBar{
 			width:250px;
 			
 		}
+		
 		.user-status{
 			background:#fff0f5;
 			border-radius:40px;
@@ -216,15 +222,15 @@
 																
 																// Inserting user data.
 																$user_insert = "insert into user (
-																	user_first_name, user_last_name, user_email, password, 
+																	user_first_name, user_last_name, user_email, password,user_status, 
 																	user_gender, user_dob, user_address, user_city, user_pincode, 
-																	user_otp, user_verified, user_image, user_qrcode, user_card, 
-																	user_date, user_time
+																	user_otp, user_verified, user_image, user_qrcode, user_card, user_card_status,
+																	user_date, user_time, user_govt
 																	) values (
-																	'$user_first_name', '$user_last_name', '$user_email_enc', '$password',  
+																	'$user_first_name', '$user_last_name', '$user_email_enc', '$password', '1',  
 																	'$user_gender', '$user_dob', '$user_address', '$user_city', '$user_pincode', 
-																	'$otp', '0', '$path', 'NA', '$card_number_enc', 
-																	'$date', '$time'
+																	'$otp', '0', '$path', 'NA', '$card_number_enc', '0', 
+																	'$date', '$time', '1'
 																	)";
 													
 																// Checking whether the data are added or not
@@ -331,8 +337,8 @@
                         Verify Your Email
                     </h4>
                     <p class="text-center">Verification mail has sent to <?php echo $user_email;?>.</p>
-					<p class="text-center" id="resendNote">Didn't recieve maik ? You can request a new mail after complition of this bar.</p>
-					<p class="text-center"><progress value="0" max="10" id="progressBar"></progress></p>
+					<p class="text-center" id="resendNote">Didn't recieve mail ? You can request a new mail after complition of this bar...</p>
+					<p class="text-center"><progress value="0" max="120" id="progressBar"></progress></p>
 					<div class="form-group d-flex justify-content-center">
 						<button type="submit" id="requestotp" name="requestotp" onclick="post();" class="btn btn-loose-color special-button">Request A New Mail</button>
 					</div>
@@ -356,7 +362,7 @@
 				url: "request-otp.php",
 				method: "post",
 				data: {
-					uid:1,
+					uid:<?php echo $user_id;?>,
 					to:<?php echo "'".$user_email."'";?>,
 				},
 				success: function (response) {
@@ -369,14 +375,14 @@
 		
 		function progressBar(){
 			document.getElementById("requestotp").style.display="none";
-			var timeleft = 10;
+			var timeleft = 120;
 			var downloadTimer = setInterval(function(){
 			  if(timeleft <= 0){
 				clearInterval(downloadTimer);
 				document.getElementById("progressBar").style.display="none";
 				document.getElementById("requestotp").style.display="block";
 			  }
-			  document.getElementById("progressBar").value = 10 - timeleft;
+			  document.getElementById("progressBar").value = 120 - timeleft;
 			  timeleft -= 1;
 			}, 1000);
 		}

@@ -163,6 +163,9 @@
                     <h4 class="title text-center mt-4">
                         Create Account
                     </h4>
+					<p class="title text-center mt-4">
+                        All details should to genuine. Future updation will become complex.
+                    </p>
                     <form class="form-box px-3" action="verify-email.php" method="post" enctype="multipart/form-data">
                         <div class="form-input">
                             <span><i class="fa fa-user-o"></i></span>
@@ -225,7 +228,11 @@
 							<div class="form-input col-sm-7">
 								<input class="pt-2 pl-3" type="file" name="user_image" id="user_image" required>
 							</div>
+							
 						</div>
+							<p class=" text-center">
+								Profile Picture's size should be under <b>80KB</b>.
+							</p>
 						<hr/>
 						<div class="form-control">
 							<input type="checkbox" name="term" id="term" required> <span class="term"> <a href="#" class="text-secondary">Agree Terms & Conditions</a></span>
@@ -242,7 +249,7 @@
                         <hr class="my-4">
                         <div class="text-center mb-2">
                             If you have an account?
-                            <a href="signin.html" class="register-link">
+                            <a href="signin.php" class="register-link">
                                 Sign in here
                             </a>
                         </div>
