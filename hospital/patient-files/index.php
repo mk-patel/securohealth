@@ -3,18 +3,7 @@
 	//Havind identity codes.
 	require_once '../control/identification.php';
 	
-	if(isset($_REQUEST['trt_name'])){
-		$trt_name = mysqli_escape_string($conn, $_REQUEST['trt_name']);
-	}else{
-		header('location:../index.php');
-	}
-	if(isset($_REQUEST['ref_id'])){
-		$trt_ref_id = aes_decrypt($_REQUEST['ref_id']);
-	}else{
-		$trt_ref_id = 0;
-	}
-	if(isset($_POST['qrres']) && isset($_POST['trt_name'])){
-		$trt_name = mysqli_escape_string($conn, $_POST['trt_name']);
+	if(isset($_POST['qrres'])){
 		$qrres = mysqli_escape_string($conn ,$_POST['qrres']);
 		
 		$trt_name_enc = aes_encrypt($trt_name);
@@ -37,8 +26,6 @@
 				break;
 			}
 		}
-		
-		
 		if($proceed == 1){
 			
 			if(($user_card_status != 0) || ($user_card_row != $user_card)){
@@ -47,58 +34,14 @@
 						window.location.href='../index.php';
 					</script>";
 			}else{
-				
-				// Selecting trt id.
-				$select_trt_id = "select trt_id, trt_name from treatment_session";
-				$select_trt_result = mysqli_query($conn, $select_trt_id);
-				while($trt_row_encrypted = mysqli_fetch_assoc($select_trt_result)){
-					$trt_name_row = aes_decrypt($trt_row_encrypted['trt_name']);
-					if($trt_name_row == $trt_name){
-						$trt_id = $trt_row_encrypted['trt_id'];
-						$proceed = 0;
-						break;
-					}
-				}
-				if($proceed == 1){
-					
-					// Setting up default timezone.
-					date_default_timezone_set('Asia/Calcutta');
-					$date=date("Y-m-d");
-					$time=date("h:i A");
-					$date = aes_encrypt($date." ".$time);
-					
-					$trt_insert = "insert into treatment_session (trt_name, trt_inf, trt_dis, trt_srt, trt_corm, trt_date, trt_closing_date, trt_user_id, trt_hp_id, trt_completed, trt_ref_id)
-						values('$trt_name_enc', '0', '0', '0', '0', '$date', 'NA', '$user_id', '$hp_id', '0', '$trt_ref_id')";
-					
-					if(mysqli_query($conn, $trt_insert)){
-						// Selecting trt id.
-						$select_trt_id = "select trt_id, trt_name from treatment_session";
-						$select_trt_result = mysqli_query($conn, $select_trt_id);
-						while($trt_row_encrypted = mysqli_fetch_assoc($select_trt_result)){
-							$trt_name_row = aes_decrypt($trt_row_encrypted['trt_name']);
-							if($trt_name_row == $trt_name){
-								$trt_id = $trt_row_encrypted['trt_id'];
-								break;
-							}
-						}
-						
-						$_SESSION['trt_id_56'] = aes_encrypt($trt_id);
-						$_SESSION['qrres_45'] = $qrres;
-						header('location:treatment-categories.php');
-					}else{
-						echo "<script>
-							alert('Unsuccessful, please try again.');
-							window.location.href='../index.php';
-						</script>";
-					}
-				}else{
-					$_SESSION['trt_id_56'] = aes_encrypt($trt_id);
-					$_SESSION['qrres_45'] = $qrres;
-					header('location:treatment-categories.php');
-				}
+				$_SESSION['qrres_45'] = $qrres;
+				header('location:patient-sessions.php');
 			}
 		}else{
-			header('location:../index.php');
+			echo "<script>
+				alert('Invalid Card');
+				window.location.href='../index.php';
+			</script>";
 		}
 	}
 ?>
@@ -297,14 +240,6 @@
 					  </a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="../patient-files/">
-						<span>
-							<i class="fas fa-book-medical" aria-hidden="true"></i>
-						</span>
-						History
-					  </a>
-					</li>
-					<li class="nav-item">
 						<a class="nav-link" href="../billing/bills.php">
 						<span>
 							<i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
@@ -349,13 +284,6 @@
 				<li class="nav-item p-2">
 				  <a class="nav-link active" href="#">
 					<span>
-						<i class="fas feather fa-qrcode" aria-hidden="true">&nbsp;&nbsp;Session</i>
-					</span>
-				  </a>
-				</li>
-				<li class="nav-item p-2">
-				  <a class="nav-link" href="../patient-files/">
-					<span>
 						<i class="fas feather fa-book-medical" aria-hidden="true">&nbsp;&nbsp;History</i>
 					</span>
 				  </a>
@@ -385,7 +313,7 @@
     <!-- CONTENT ON BODY -->
     <main role="main" class="col-md-12 ml-sm-auto col-lg-10 pt-3 px-4">
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-			<h1 class="h3 heading-text"><b><i class="fas fa-book-medical"></i> Creating Treatment Session</b></h1>
+			<h1 class="h3 heading-text"><b><i class="fas fa-book-medical"></i> Treatment History of Individual</b></h1>
 		</div>
 		<div class="d-flex justify-content-center flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
 			<h1 class="h4 heading-text"><b><i class="fas fa-qrcode"></i> Scan The Curo Card</b></h1>
@@ -399,7 +327,6 @@
 					<form action="" method="post">
 						<label>Or, enter the scanned QR result here</label>
 						<input type="text" name="qrres" id="qrres"  placeholder="Enter Scanned QR Result" class="form-control" required>
-						<input type="hidden" name="trt_name" id="trt_name" value="<?php echo $trt_name;?>">
 						<br/>
 						<button type="submit" name="submit" id="submit" class="btn btn-loose-color">Submit</button>
 					</form>
