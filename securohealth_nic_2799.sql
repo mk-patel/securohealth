@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 31, 2001 at 08:00 PM
+-- Generation Time: Apr 04, 2022 at 01:55 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -35,6 +35,13 @@ CREATE TABLE `secure_keys` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Dumping data for table `secure_keys`
+--
+
+INSERT INTO `secure_keys` (`sk_id`, `sk_uid`, `sk_keys`) VALUES
+(6, 2, 'fY6wXBmbtO7PnhnMKg==');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -52,7 +59,7 @@ ALTER TABLE `secure_keys`
 -- AUTO_INCREMENT for table `secure_keys`
 --
 ALTER TABLE `secure_keys`
-  MODIFY `sk_id` int(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `sk_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
