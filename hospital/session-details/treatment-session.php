@@ -26,12 +26,13 @@
 		$proceed = 0;
 		
 		// Selecting user_id.
-		$select_user_card = "select user_id, user_card, user_card_status from user";
+		$select_user_card = "select user_id, user_email, user_card, user_card_status from user";
 		$select_user_card_result = mysqli_query($conn, $select_user_card);
 		while($user_card_row_encrypted = mysqli_fetch_assoc($select_user_card_result)){
 			$user_card_row = aes_decrypt($user_card_row_encrypted['user_card']);
 			if($user_card_row == $user_card){
 				$user_id = $user_card_row_encrypted['user_id'];
+				$user_email = aes_decrypt($user_card_row_encrypted['user_email']);
 				$user_card_status = $user_card_row_encrypted['user_card_status'];
 				$proceed = 1;
 				break;
@@ -40,6 +41,69 @@
 		
 		
 		if($proceed == 1){
+			
+			// Setting up default timezone.
+			date_default_timezone_set('Asia/Calcutta');
+			$date_as = date("Y-m-d");
+			$time = date("h:i A");
+			
+			$date = aes_encrypt($date_as." ".$time);
+			
+			$cs_select = "select cs_id from card_scanned where cs_user_id='$user_id' and cs_hp_id='$hp_id'";
+			$cs_result = mysqli_query($conn, $cs_select);
+			$cs_row = mysqli_fetch_assoc($cs_result);
+			
+			if(mysqli_num_rows($cs_result)<=0){
+				$trt_query = "insert into card_scanned (cs_user_id, cs_hp_id, cs_date, cs_time)
+				values('$user_id', '$hp_id', '$date_as', '$time')";
+			}else{
+				$cs_id = $cs_row['cs_id'];
+				$trt_query = "update card_scanned set cs_date='$date_as', cs_time='$time' where (cs_user_id='$user_id' and cs_hp_id='$hp_id' and cs_id='$cs_id')";
+			}
+			
+			if(mysqli_query($conn, $trt_query)){
+				// Including PHPMiler to send otp.
+				/*include('../../sys-components/smtp/index.php');
+				$msg="Hi There,<br/> 
+					Your data security is the most important for us.<br/>
+					Your Curo Card is scanned in:<br/><br/>
+					".$hp_name."<br/><br/>
+					At ".$date_as.", ".$time."<br/><br/>
+					If you did not scan your card, immediatly block this hospital from accessing your data.<br/>
+					Go to -> <b>Privacy</b> visible on left side or nav bar<br/>
+					Then go to -> <b>Your Card Scanned At</b> section on bottom of right side, and click <b>Block This Hospital</b>
+					Thanks & Regards<br/>
+					Technical Lead - SecuroHealth";
+				
+				$is_mail_sent = smtp_mailer($user_email,'Security Alert, Card Scanned - SecuroHealth',$msg);
+				
+				// Checking whether the mail sent or not.
+				if($is_mail_sent == "Sent"){
+					echo "<script>alert('Verification E-Mail Sent.');</script>";
+				}else{
+					echo "<script>alert('Something went wrong on Mail System.');</script>";
+				}*/
+			}
+			
+			// This is a Outside Database Connection code.
+			$conn_nic = mysqli_connect("localhost", "root", "", "securohealth_nic_2799");
+
+			// when the connection fails then error message will be printed.
+			if(!$conn_nic){
+				die("Connection Failed, Please Try Again !!".mysqli_connect_error());
+			}else{
+				$user_scanned_private_key = aes_decrypt($qr_card[1]);
+				
+				$key_select = "select sk_keys from secure_keys where sk_uid='$user_id'";
+				$key_result = mysqli_query($conn_nic, $key_select);
+				$key_row = mysqli_fetch_assoc($key_result);
+				if(aes_decrypt($key_row['sk_keys']) != $user_scanned_private_key){
+					echo "<script>
+						alert('Invalid Card.');
+						window.location.href='../index.php';
+					</script>";
+				}
+			}
 			
 			if(($user_card_status != 0) || ($user_card_row != $user_card)){
 				echo "<script>
@@ -60,36 +124,40 @@
 					}
 				}
 				if($proceed == 1){
+					$user_status_select = "select user_status from user where user_id='$user_id'";
+					$user_status_result = mysqli_query($conn, $user_status_select);
+					$user_status_row = mysqli_fetch_assoc($user_status_result);
 					
-					// Setting up default timezone.
-					date_default_timezone_set('Asia/Calcutta');
-					$date=date("Y-m-d");
-					$time=date("h:i A");
-					$date = aes_encrypt($date." ".$time);
-					
-					$trt_insert = "insert into treatment_session (trt_name, trt_inf, trt_dis, trt_srt, trt_corm, trt_date, trt_closing_date, trt_user_id, trt_hp_id, trt_completed, trt_ref_id)
-						values('$trt_name_enc', '0', '0', '0', '0', '$date', 'NA', '$user_id', '$hp_id', '0', '$trt_ref_id')";
-					
-					if(mysqli_query($conn, $trt_insert)){
-						// Selecting trt id.
-						$select_trt_id = "select trt_id, trt_name from treatment_session";
-						$select_trt_result = mysqli_query($conn, $select_trt_id);
-						while($trt_row_encrypted = mysqli_fetch_assoc($select_trt_result)){
-							$trt_name_row = aes_decrypt($trt_row_encrypted['trt_name']);
-							if($trt_name_row == $trt_name){
-								$trt_id = $trt_row_encrypted['trt_id'];
-								break;
-							}
-						}
-						
-						$_SESSION['trt_id_56'] = aes_encrypt($trt_id);
-						$_SESSION['qrres_45'] = $qrres;
-						header('location:treatment-categories.php');
-					}else{
+					if($user_status_row['user_status'] == 2){
 						echo "<script>
-							alert('Unsuccessful, please try again.');
-							window.location.href='../index.php';
-						</script>";
+								alert('This account has been Deactivated.');
+								window.location.href='../index.php';
+							</script>";
+					}else{
+						$trt_insert = "insert into treatment_session (trt_name, trt_inf, trt_dis, trt_srt, trt_corm, trt_date, trt_closing_date, trt_user_id, trt_hp_id, trt_completed, trt_ref_id)
+							values('$trt_name_enc', '0', '0', '0', '0', '$date', 'NA', '$user_id', '$hp_id', '0', '$trt_ref_id')";
+						
+						if(mysqli_query($conn, $trt_insert)){
+							// Selecting trt id.
+							$select_trt_id = "select trt_id, trt_name from treatment_session";
+							$select_trt_result = mysqli_query($conn, $select_trt_id);
+							while($trt_row_encrypted = mysqli_fetch_assoc($select_trt_result)){
+								$trt_name_row = aes_decrypt($trt_row_encrypted['trt_name']);
+								if($trt_name_row == $trt_name){
+									$trt_id = $trt_row_encrypted['trt_id'];
+									break;
+								}
+							}
+							
+							$_SESSION['trt_id_56'] = aes_encrypt($trt_id);
+							$_SESSION['qrres_45'] = $qrres;
+							header('location:treatment-categories.php');
+						}else{
+							echo "<script>
+								alert('Unsuccessful, please try again.');
+								window.location.href='../index.php';
+							</script>";
+						}
 					}
 				}else{
 					$_SESSION['trt_id_56'] = aes_encrypt($trt_id);

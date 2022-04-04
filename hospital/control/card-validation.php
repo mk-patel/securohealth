@@ -23,6 +23,38 @@
 			}
 		}
 		if($proceed = 1){
+			
+			$bkh_select = "select bkh_hp_id from blocked_hospital where (bkh_user_id='$user_id' and bkh_hp_id='$hp_id')";
+			$bkh_result = mysqli_query($conn, $bkh_select);
+			$bkh_row = mysqli_fetch_assoc($bkh_result);
+			
+			if($bkh_row['bkh_hp_id'] == $hp_id){
+				echo "<script>
+						alert('You do not have the permission to use this card.');
+						window.location.href='../index.php';
+					</script>";
+			}
+			
+			// This is a Outside Database Connection code.
+			$conn_nic = mysqli_connect("localhost", "root", "", "securohealth_nic_2799");
+
+			// when the connection fails then error message will be printed.
+			if(!$conn_nic){
+				die("Connection Failed, Please Try Again !!".mysqli_connect_error());
+			}else{
+				$user_scanned_private_key = aes_decrypt($qr_card[1]);
+				
+				$key_select = "select sk_keys from secure_keys where sk_uid='$user_id'";
+				$key_result = mysqli_query($conn_nic, $key_select);
+				$key_row = mysqli_fetch_assoc($key_result);
+				if(aes_decrypt($key_row['sk_keys']) != $user_scanned_private_key){
+					echo "<script>
+						alert('Invalid Card.');
+						window.location.href='../index.php';
+					</script>";
+				}
+			}
+			
 			if(($user_card_status != 0) || ($user_card_row != $user_card)){
 				echo "<script>
 						alert('This card has been blocked, suggest to unblock it or generate a new card.');

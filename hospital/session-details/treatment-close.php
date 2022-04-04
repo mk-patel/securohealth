@@ -49,7 +49,7 @@
 						alert('Already Discharged');
 						window.location.href='../index.php';
 					</script>";
-				echo "Successfully Re-Opened The File";
+				echo "Already Discharged";
 			}
 		}
 	}else{

@@ -40,6 +40,9 @@
 			else if($hp_status == 0){
 				header("location: ../../issue.php?i=1");
 			}
+			else if($hp_status == 2){
+				header("location: ../../issue.php?i=2");
+			}
 			else if($hp_email != $hp_email_dec){
 				header("location: ../../index.php");
 			}

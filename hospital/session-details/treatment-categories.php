@@ -308,7 +308,7 @@
 		$trt_hp_id = $trt_details_row['trt_hp_id'];
 		
 		// Selecting hospital details.
-		$select_hp_details = "select hp_id,hp_name from hospital where hp_id='$trt_hp_id'";
+		$select_hp_details = "select hp_id, hp_name from hospital where hp_id='$trt_hp_id'";
 		$trt_hp_result = mysqli_query($conn, $select_hp_details);
 		$trt_hp_row = mysqli_fetch_assoc($trt_hp_result);
 		

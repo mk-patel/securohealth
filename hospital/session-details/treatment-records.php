@@ -441,7 +441,19 @@
 				  <td><?php echo aes_pvt_decrypt($record_row['tr_title'], $user_private_key);?></td>
 				  <td><?php echo aes_pvt_decrypt($record_row['tr_desc'], $user_private_key);?></td>
 				  <td><?php echo aes_pvt_decrypt($record_row['tr_doctor'], $user_private_key);?></td>
-				  <td><a href="../../<?php echo aes_pvt_decrypt($record_row['tr_files'], $user_private_key);?>"><?php echo aes_pvt_decrypt($record_row['tr_files'], $user_private_key);?></a></td>
+				  <td>
+					<?php 
+						if(aes_pvt_decrypt($record_row['tr_files'], $user_private_key) != "NA" ){
+					?>
+						<a href="../../<?php echo aes_pvt_decrypt($record_row['tr_files'], $user_private_key);?>">
+							<?php echo aes_pvt_decrypt($record_row['tr_files'], $user_private_key);?>
+						</a>
+					<?php
+						}else{
+							echo "NA";
+						}
+					  ?>
+				  </td>
 					<?php
 						if($trt_hp_id==$hp_id){
 					?>
@@ -509,7 +521,19 @@
 			  <td><a href="edit-record.php?tr_id=<?php echo $record_row['tr_id'];?>"><?php echo aes_pvt_decrypt($record_row['tr_title'], $user_private_key);?></a></td>
 			  <td><?php echo aes_pvt_decrypt($record_row['tr_desc'], $user_private_key);?></td>
 			  <td><?php echo aes_pvt_decrypt($record_row['tr_doctor'], $user_private_key);?></td>
-			  <td><a href="../../<?php echo aes_pvt_decrypt($record_row['tr_files'], $user_private_key);?>">Attached</a></td>
+			  <td>
+				<?php 
+						if(aes_pvt_decrypt($record_row['tr_files'], $user_private_key) != "NA" ){
+					?>
+						<a href="../../<?php echo aes_pvt_decrypt($record_row['tr_files'], $user_private_key);?>">
+							Attached
+						</a>
+					<?php
+						}else{
+							echo "NA";
+						}
+					  ?>
+			  </td>
 				<?php
 					if($trt_hp_id==$hp_id){
 				?>

@@ -341,6 +341,78 @@
       <div class="d-flex">
         <div class="p-2 mr-auto"><span class="text-muted">Card No. : <?php echo substr($user_card,0,4)." ".substr($user_card,4,3)." ".substr($user_card,7,4);?></span></div>
 	  </div>
+	  <?php
+		$trt_select = "select trt_id, trt_name, trt_hp_id, trt_date, trt_closing_date, trt_completed from treatment_session
+			where trt_user_id=$user_id and trt_hp_id=0
+			order by trt_id desc
+			";
+		$trt_result = mysqli_query($conn, $trt_select);
+		if(mysqli_num_rows($trt_result)<=0){
+			
+		}else{
+		
+		?>
+	  
+		  <div class="d-flex flex-row justify-content-between border-bottom pt-5">
+			<div class="p-2 heading-text h4">Self Created Treatment Sessions</div>
+		  </div> <br>
+		  <div class="row">
+		  <?php
+				while($trt_row = mysqli_fetch_assoc($trt_result)){
+					$trt_hp_id = $trt_row['trt_hp_id'];
+					
+					$hp_select = "select hp_name from hospital where hp_id=$trt_hp_id";
+					$hp_result = mysqli_query($conn, $hp_select);
+					$hp_row = mysqli_fetch_assoc($hp_result);
+					$hp_name = $hp_row['hp_name'];
+					
+					$date = aes_decrypt($trt_row['trt_date']);
+					$bg = "background:white";
+					$acti = "Open";
+					if($trt_row['trt_completed']==1){
+						$bg = "background:#ccffda";
+						$date = aes_decrypt($trt_row['trt_closing_date']);
+						$acti = "View";
+					}
+		  ?>
+			<div class="col-md-4">
+			  <div class="card mb-4 box-shadow" style="<?php echo $bg;?>">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<div class="btn-group">
+							<b><?php echo aes_decrypt($trt_row['trt_name']);?></b>
+						</div>
+						ID: <?php echo $trt_row['trt_id'];?>
+					</div>
+					<p class="card-text mt-1">
+					</p>
+					<p class="card-text text-muted"> 
+						Opened: <?php echo aes_decrypt($trt_row['trt_date']);?><br/> 
+						<?php
+						if($trt_row['trt_completed']==1){
+							echo "Discharged: ".aes_decrypt($trt_row['trt_closing_date']);
+						}else{
+							echo "Treatment running...";
+						}
+						?>
+					</p>
+					
+				  <div class="d-flex justify-content-between align-items-center">
+					<div class="btn-group">
+					</div> <br>
+					<a href="session-details/treatment-session.php?trt_name=<?php echo aes_decrypt($trt_row['trt_name']);?>" class=""> <button type="button" class="btn btn-success btn-sm"><?php echo $acti;?></button> </a>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			<?php
+				}
+			?>
+			</div>
+		<?php
+			}
+		?>
+	  
       <!-- <div class="card"> -->
       <div class="d-flex flex-row justify-content-between border-bottom pt-4">
         <div class="p-2 heading-text h5">Treatment Sessions</div>
@@ -355,14 +427,12 @@
           </div>
         </div>
       </div> <br>
-
       <!-- THE LIST OF CARDS FOR PRINTING -->
       <div class="row" id="output">
 	  
 	  <?php
-		$trt_select = "select trt_id, trt_name, trt_date, trt_closing_date, trt_completed, hp_name from treatment_session
-			inner join hospital on hp_id=trt_hp_id
-			where trt_user_id=$user_id
+		$trt_select = "select trt_id, trt_name, trt_hp_id, trt_date, trt_closing_date, trt_completed from treatment_session
+			where trt_user_id=$user_id and trt_hp_id != 0
 			order by trt_id desc
 			";
 		$trt_result = mysqli_query($conn, $trt_select);
@@ -370,6 +440,13 @@
 			echo "<div class='text-center h5 p-3'>You don't have any treatment history.</div>";
 		}else{
 			while($trt_row = mysqli_fetch_assoc($trt_result)){
+				$trt_hp_id = $trt_row['trt_hp_id'];
+				
+				$hp_select = "select hp_name from hospital where hp_id=$trt_hp_id";
+				$hp_result = mysqli_query($conn, $hp_select);
+				$hp_row = mysqli_fetch_assoc($hp_result);
+				$hp_name = $hp_row['hp_name'];
+				
 				$date = aes_decrypt($trt_row['trt_date']);
 				$bg = "background:white";
 				$acti = "Open";
@@ -389,7 +466,7 @@
 					ID: <?php echo $trt_row['trt_id'];?>
 				</div>
 				<p class="card-text mt-1">
-					<?php echo aes_decrypt($trt_row['hp_name']);?>
+					<?php echo aes_decrypt($hp_name);?>
 				</p>
 				<p class="card-text text-muted"> 
 					Opened: <?php echo aes_decrypt($trt_row['trt_date']);?><br/> 

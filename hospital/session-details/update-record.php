@@ -55,7 +55,7 @@
 					$path = aes_pvt_encrypt($path, $user_private_key);
 					if(move_uploaded_file($_FILES["tr_files"]["tmp_name"],$target_directory.$newfilename)){
 					
-						$sql = "update treatment_record set tr_title='$tr_title',tr_desc='$tr_title',tr_cost='$tr_cost',tr_doctor='$tr_doctor',tr_files='$path',tr_date='$date' where tr_id=$tr_id";
+						$sql = "update treatment_record set tr_title='$tr_title',tr_desc='$tr_desc',tr_cost='$tr_cost',tr_doctor='$tr_doctor',tr_files='$path',tr_date='$date' where tr_id=$tr_id";
 						if(mysqli_query($conn, $sql)){
 							echo "Record Successfully Updated.";
 						}
@@ -70,7 +70,7 @@
 					echo "Invalid, Please Upload Image Under 10MB Size";
 				}
 			}else{
-				$sql = "update treatment_record set tr_title='$tr_title',tr_desc='$tr_title',tr_cost='$tr_cost',tr_doctor='$tr_doctor',tr_date='$date' where tr_id=$tr_id";
+				$sql = "update treatment_record set tr_title='$tr_title',tr_desc='$tr_desc',tr_cost='$tr_cost',tr_doctor='$tr_doctor',tr_date='$date' where tr_id=$tr_id";
 					if(mysqli_query($conn, $sql)){
 					echo "Record Successfully Updated.";
 				}

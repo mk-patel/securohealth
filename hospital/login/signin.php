@@ -36,7 +36,11 @@
 						$status = 1;
 					}
 				}else{
-					header('location:issue.php?i=1');
+					if($hp_row_encrypted['hp_status']==1){
+						header('location:issue.php?i=1');
+					}else if($hp_row_encrypted['hp_status']==2){
+						header('location:issue.php?i=2');
+					}
 				}
 			}
 		}else{
@@ -245,6 +249,12 @@
               <button type="submit" class="btn btn-sm btn-primary btn-block text-uppercase">
                 Sign In
               </button>
+            </div>
+			<div class="text-center mb-2">
+              Forgot 
+              <a href="forget-pass.php" class="register-link">
+                Password?
+              </a>
             </div>
             <hr class="my-4">
             <div class="text-center mb-2">

@@ -39,6 +39,8 @@
 			}
 			else if($hp_status == 0){
 				header("location: ../login/issue.php?i=1");
+			}else if($hp_status == 2){
+				header("location: ../login/issue.php?i=2");
 			}
 			else if($hp_email != $hp_email_dec){
 				header("location: login/signin.php");
@@ -259,6 +261,14 @@
 					  </a>
 					</li>
 					<li class="nav-item">
+						<a class="nav-link" href="security/index.php">
+						<span>
+							<i class="fas fa-calculator" aria-hidden="true"></i>
+						</span>
+						Security
+					  </a>
+					</li>
+					<li class="nav-item">
 					  <a class="nav-link" href="login/logout.php">
 						<span>
 						  <i class="fas fa-address-card"></i>
@@ -303,6 +313,13 @@
 						<i class="fas feather fa-file-invoice-dollar" aria-hidden="true">&nbsp;&nbsp;Billing</i>
 					</span>
 					
+				  </a>
+				</li>
+				<li class="nav-item p-2">
+				  <a class="nav-link" href="security/index.php">
+					<span>
+						<i class="fas feather fa-calculator" aria-hidden="true">&nbsp;&nbsp;Security</i>
+					</span>
 				  </a>
 				</li>
 				<li class="nav-item p-2">

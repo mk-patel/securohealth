@@ -42,7 +42,7 @@
 			$bill_date = aes_encrypt($date." ".$time);
 			
 			$bill_amount = aes_encrypt($bill_amount);
-			$bill_txn_id = aes_encrypt("CASH".rand(00000, 99999));
+			$bill_txn_id = 0;
 			
 			$bill_order_id = aes_encrypt($bill_order_id);
 			
